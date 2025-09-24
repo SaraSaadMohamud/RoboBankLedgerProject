@@ -113,19 +113,19 @@ STD_Return_Type apply_all(char Accounts[][20], char tx_type[MAX_Transaction], in
 /**
  * Retrieves the balance of a specific account by its ID.
  *
- * @brief        : Gets the current balance of an account.
+ * @brief                      : Gets the current balance of an account.
  *
- * @param Accounts         : A 2D array containing all account IDs.
+ * @param Accounts             : A 2D array containing all account IDs.
+ * 
+ * @param Balance              : An array containing the balance of each account.
  *
- * @param Balance          : An array containing the balance of each account.
- *
- * @param ID               : The account ID to look up.
+ * @param ID                   : The account ID to look up.
  *
  * @param Current_Accounts_Num : The total number of accounts available.
  *
- * @param Amount           : Pointer to an integer where the retrieved balance will be stored.
+ * @param Amount               : Pointer to an integer where the retrieved balance will be stored.
  *
- * @return       : STD_Return_Type indicating whether the account was found and balance retrieved.
+ * @return                      : STD_Return_Type indicating whether the account was found and balance retrieved.
  */
 STD_Return_Type  balance_of(char Accounts[][20], int Balance[],char ID[],int Current_Accounts_Num,int *Amount);
 
@@ -134,26 +134,27 @@ STD_Return_Type  balance_of(char Accounts[][20], int Balance[],char ID[],int Cur
 /**
  * Generates a summary of the bank's accounts and transactions.
  *
- * @brief        : Provides a summary related to the bank accounts and their transactions.
+ * @brief                      : Provides a summary related to the bank accounts and their transactions.
  *
- * @param Array            : (Possibly intended to be Accounts[][]) - Array of account IDs (clarify usage).
+ * @param Array                : (Possibly intended to be Accounts[][]) - Array of account IDs (clarify usage).
  *
- * @param Balance          : An array containing the balance of each account.
+ * @param Balance              : An array containing the balance of each account.
  *
- * @param tx_type          : (Possibly unused) The type of transaction or filter (clarify purpose).
+ * @param tx_type              : (Possibly unused) The type of transaction or filter (clarify purpose).
  *
- * @param tx_amout         : (Possibly unused) Array of transaction amounts (clarify usage).
+ * @param tx_amout             : (Possibly unused) Array of transaction amounts (clarify usage).
  *
- * @param tx_count         : The number of transactions involved (if applicable).
+ * @param tx_count             : The number of transactions involved (if applicable).
  *
  * @param Current_Accounts_Num : The total number of active accounts.
  *
- * @param current_ID       : The ID of a specific account to focus on in the summary (optional).
+ * @param current_ID           : The ID of a specific account to focus on in the summary (optional).
  *
- * @return       : STD_Return_Type indicating the success of generating the summary.
+ * @return                     : STD_Return_Type indicating the success of generating the summary.
  */
-STD_Return_Type bank_summary(char Array[], int Balance[],int tx_type,int tx_amout[], int tx_count,\
-                             int Current_Accounts_Num,char current_ID);
+STD_Return_Type bank_summary(char Accounts[][20], int Balance[], char tx_type[MAX_Transaction], int tx_amout[],
+                             int Current_Accounts_Num, char tx_accounts_id[][20]);
+                             
 /*************************************** Function Prototypes Part ****************************** */
 
 

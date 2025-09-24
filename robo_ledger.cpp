@@ -1,9 +1,11 @@
 /***************************************        Include Part       ****************************** */
 #include "robo_ledger.hpp"
 #include <string.h>
+#include <iostream>
 
 /*************************************** Function Definiton Part ****************************** */
-extern int Balance;
+extern int tx_count;
+
 STD_Return_Type find_account_index(char Accounts[][20],char ID[], size_t Accounts_Num,int *ret)
 {
     STD_Return_Type RET = E_OK;
@@ -26,9 +28,9 @@ STD_Return_Type find_account_index(char Accounts[][20],char ID[], size_t Account
         }
 
         if(flag == 0)
-        {
+       {
             *ret = -1;
-        }
+       }
     }
 
     return(RET);
@@ -55,12 +57,8 @@ STD_Return_Type get_or_create_account(char Accounts[][20], int Balance[MAX_ACCOU
                 *index = i;
                 break;
             }
-            else
-            {
-                
-            }
-
         }
+
         if(!flag)
         {
             if(i < MAX_ACCOUNTS)
@@ -83,7 +81,7 @@ STD_Return_Type apply_one(char Accounts[][20], int Balance[],int Allocated_Accou
     int index = 0;
     int Choice=0;
     int Check=0;
-    int Percente, time,compounds_per_year;
+    int time,compounds_per_year;
 
     if((nullptr == Accounts) || (nullptr == Balance))
     {
@@ -99,18 +97,21 @@ STD_Return_Type apply_one(char Accounts[][20], int Balance[],int Allocated_Accou
             Balance[index] = Apply_Deposite(Balance[index],amount);
             std::cout<<"Balance Before: "<<Check<<std::endl;
             std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+            tx_count++;
             break;
 
             case '1':
             Balance[index] = Apply_Withdrawal(Balance[index],amount);
             std::cout<<"Balance Before: "<<Check<<std::endl;
             std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+            tx_count++;
             break;
 
             case '2':
             Balance[index] = Apply_Fee(Balance[index],amount);
             std::cout<<"Balance Before: "<<Check<<std::endl;
             std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+            tx_count++;
             break;
 
             case '3':
@@ -130,6 +131,7 @@ STD_Return_Type apply_one(char Accounts[][20], int Balance[],int Allocated_Accou
                     Balance[index] = Simple_Insert(Balance[index],amount,time);
                     std::cout<<"Balance Before: "<<Check<<std::endl;
                     std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+                    tx_count++;
                     break;
 
                     case 2:
@@ -140,12 +142,13 @@ STD_Return_Type apply_one(char Accounts[][20], int Balance[],int Allocated_Accou
                     Balance[index] = Compound_Amount(Balance[index],amount,time,compounds_per_year);
                     std::cout<<"Balance Before: "<<Check<<std::endl;
                     std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+                    tx_count++;
                     break;
 
                     case 3:
                     exit(1);
                     break;
-                    defualt:
+                    default:
                     std::cout<<"Invalid Input!."<<std::endl;
                     Choice = -1;
                     break;
@@ -158,12 +161,14 @@ STD_Return_Type apply_one(char Accounts[][20], int Balance[],int Allocated_Accou
             Balance[index] = Apply_Deposite(Balance[index],amount);
             std::cout<<"Balance Before: "<<Check<<std::endl;
             std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+            tx_count++;
             break;
 
             case '5':
             Balance[index] = Apply_Withdrawal(Balance[index],amount);
             std::cout<<"Balance Before: "<<Check<<std::endl;
             std::cout<<"Balance After: "<<Balance[index]<<std::endl;
+            tx_count++;
             break;
         }
     }
@@ -171,11 +176,11 @@ STD_Return_Type apply_one(char Accounts[][20], int Balance[],int Allocated_Accou
     return(RET);
 }
 
-STD_Return_Type apply_all(char Accounts[][20], char tx_type[MAX_Transaction],int tx_amout[], int tx_count, int Current_Accounts_Num,\
-                           int Balance[],char tx_accounts_id[][20]) 
+STD_Return_Type apply_all(char Accounts[][20], char tx_type[MAX_Transaction], int tx_amout[], int tx_count, int Current_Accounts_Num,
+                         int Balance[], char tx_accounts_id[][20])
 {
     STD_Return_Type   RET = E_OK;
-    
+
     if((nullptr == Accounts) || (tx_type == nullptr) || (tx_accounts_id == nullptr) || (nullptr == Balance) || (nullptr == tx_amout))
     {
         RET = E_NOK;
@@ -204,8 +209,59 @@ STD_Return_Type  balance_of(char Accounts[][20], int Balance[],char ID[],int Cur
     {
         find_account_index(Accounts,ID,Current_Accounts_Num,&index);
         *Amount = Balance[index];
-
     }
 
     return(RET);
+}
+
+
+STD_Return_Type bank_summary(char Accounts[][20], int Balance[], char tx_type[MAX_Transaction], int tx_amout[],
+                             int Current_Accounts_Num, char tx_accounts_id[][20])
+{
+    STD_Return_Type RET = E_OK;
+
+    if ((nullptr == Accounts) || (nullptr == Balance) || (nullptr == tx_type) || (nullptr == tx_amout) || (nullptr == tx_accounts_id))
+    {
+        RET = E_NOK;
+    }
+    else
+    {
+        std::cout << "\n================== Bank Summary ==================\n";
+        int total_balance = 0;
+
+        for (int i = 0; i < Current_Accounts_Num; i++)
+        {
+            std::cout << "Account: " << Accounts[i] << " | Balance: " << Balance[i] << "\n";
+            total_balance += Balance[i];
+        }
+
+        std::cout << "--------------------------------------------------\n";
+        std::cout << "Total Accounts: " << Current_Accounts_Num << "\n";
+        std::cout << "Total Balance : " << total_balance << "\n";
+
+        int tx_stats[6] = {0}; 
+        int flag = 0;
+       
+        for (int i = 0; i < tx_count; i++)
+        {
+            if (tx_type[i] >= '0' && tx_type[i] <= '5')
+            {
+                flag = tx_type[i] - '0';
+                
+                tx_stats[flag] += 1;
+            }
+        }
+
+        std::cout << "--------------------------------------------------\n";
+        std::cout << "Transactions Summary....................\n";
+        std::cout << "Deposits     : " << tx_stats[0] << "\n";
+        std::cout << "Withdrawals  : " << tx_stats[1] << "\n";
+        std::cout << "Fees         : " << tx_stats[2] << "\n";
+        std::cout << "Interest     : " << tx_stats[3] << "\n";
+        std::cout << "Transfer In  : " << tx_stats[4] << "\n";
+        std::cout << "Transfer Out : " << tx_stats[5] << "\n";
+        std::cout << "==================================================\n";
+    }
+
+    return RET;
 }
